@@ -61,8 +61,11 @@ jobs:
           git push
 
       # ── Shared: auto-close the failure issue once we recover ─────
+      # NOTE: not `if: success()` — a continue-on-error check failure still
+      # evaluates success() as true, which would close the open failure
+      # issue on a still-failing run. Gate on the check outcome explicitly.
       - name: Close resolved failure issues
-        if: success()
+        if: steps.check.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
