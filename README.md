@@ -1,13 +1,6 @@
 # nix-flake-template
 
-A starter for Nix flakes that package **prebuilt applications**, with an auto-update pipeline that actually survives the internet. Synthesized from the Hy4ri flake fleet ([kimicode-flake], [opencode-flake], [antigravity-flake], [cheatengine-flake], [fluxer-flake], [Vivaldi-snapshot-flake]).
-
-[kimicode-flake]: https://github.com/Hy4ri/kimicode-flake
-[opencode-flake]: https://github.com/Hy4ri/opencode-flake
-[antigravity-flake]: https://github.com/Hy4ri/antigravity-flake
-[cheatengine-flake]: https://github.com/Hy4ri/cheatengine-flake
-[fluxer-flake]: https://github.com/Hy4ri/fluxer-flake
-[Vivaldi-snapshot-flake]: https://github.com/Hy4ri/Vivaldi-snapshot-flake
+A starter for Nix flakes that package **prebuilt applications**, with an auto-update pipeline that actually survives the internet.
 
 ## Quickstart
 
