@@ -1,3 +1,5 @@
+# NOTE: this comment-tweak exists to trigger GitHub Actions workflow discovery
+# on the initial main branch. Safe to drop in future edits.
 name: Update Package
 
 on:
