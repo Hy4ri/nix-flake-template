@@ -20,6 +20,7 @@ A starter for Nix flakes that package **prebuilt applications**, with an auto-up
 | `scripts/check-update.sh` | **The only project-specific file.** Answers "what's the latest version?" (contract below). |
 | `scripts/lib/network.sh` | Shared hardened fetch helpers: fail-fast connect, 3× retry with backoff, `max-time` cap, real error capture. |
 | `update-version.sh` | Downloads the archive for a version, computes the SRI hash, updates `package.nix` + `version.json`. |
+| `.github/workflows/ci.yml` | Runs on every push, PR, and manual dispatch: `nix flake check` + build the default package. |
 | `.github/workflows/update.yml` | Daily auto-update: check → update → **verify the flake builds** → commit → push. Auto-opens a deduped issue on failure, auto-closes it on recovery. |
 | `flake.nix` / `package.nix` / `version.json` | Minimal package flake skeleton. |
 
