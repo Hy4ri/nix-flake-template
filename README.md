@@ -10,7 +10,7 @@ A starter for Nix flakes that package **prebuilt applications**, with an auto-up
    - `update-version.sh` — set `DOWNLOAD_URL_TEMPLATE`
    - `package.nix` — `pname`, `src` URL, `installPhase`, `meta`
    - `.github/workflows/update.yml` — the `schedule` cron if you want a different cadence
-3. Generate the lockfile: `nix flake update` (the weekly `update-flake-lock` workflow also does this automatically).
+3. Generate the lockfile: `nix flake update` (the update workflow refreshes it automatically on each new upstream version).
 4. Push. That's it — the daily workflow keeps version + hash + lockfile current.
 
 ## What the template gives you
@@ -21,7 +21,6 @@ A starter for Nix flakes that package **prebuilt applications**, with an auto-up
 | `scripts/lib/network.sh` | Shared hardened fetch helpers: fail-fast connect, 3× retry with backoff, `max-time` cap, real error capture. |
 | `update-version.sh` | Downloads the archive for a version, computes the SRI hash, updates `package.nix` + `version.json`. |
 | `.github/workflows/update.yml` | Daily auto-update: check → update → **verify the flake builds** → commit → push. Auto-opens a deduped issue on failure, auto-closes it on recovery. |
-| `.github/workflows/update-flake-lock.yml` | Weekly `nix flake update` so the lockfile stays fresh. |
 | `flake.nix` / `package.nix` / `version.json` | Minimal package flake skeleton. |
 
 ## How the update pipeline works
@@ -102,6 +101,6 @@ Keep one fetch per channel/component, `die()` per failure, `update_needed=true` 
 
 ## Notes
 
-- `flake.lock` is intentionally **not** committed in the template — run `nix flake update` once (or let the weekly workflow do it).
+- `flake.lock` is intentionally **not** committed in the template — run `nix flake update` once (or let the update workflow do it).
 - The verify step requires the package attribute `.#default`; `flake.nix` provides it.
 - Local testing: `GITHUB_OUTPUT=/tmp/out ./scripts/check-update.sh` works fine — the helpers default to stdout when `GITHUB_OUTPUT` isn't set.
