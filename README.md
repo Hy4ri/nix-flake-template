@@ -2,27 +2,29 @@
 
 A starter for Nix flakes that package **prebuilt applications**, with an auto-update pipeline that actually survives the internet.
 
+The included example packages **jq for x86_64-linux**. It builds without customization and checks the installed version and JSON processing.
+
 ## Quickstart
 
 1. **Create a repo from this template** (GitHub UI: *Use this template* → *Create a new repository*).
 2. Clone it, then customize four things:
-   - `scripts/check-update.sh` — set `REPO="owner/name"` (or swap in a different version source, see below)
+   - `scripts/check-update.sh` — set `REPO="owner/name"` and adjust the release-tag prefix (the jq example uses `jq-`)
    - `update-version.sh` — set `DOWNLOAD_URL_TEMPLATE`
-   - `package.nix` — `pname`, `src` URL, `installPhase`, `meta`
+   - `package.nix` — `pname`, `src` URL, `installPhase`, `installCheckPhase`, `meta`; update `flake.nix` systems to match your assets
    - `.github/workflows/update.yml` — the `schedule` cron if you want a different cadence
-3. Generate the lockfile: `nix flake update` (the update workflow refreshes it automatically on each new upstream version).
+3. Set the starting version and hash: `./update-version.sh <version>`. Then refresh the included lockfile: `nix flake update` (the update workflow refreshes it automatically on each new upstream version).
 4. Push. That's it — the daily workflow keeps version + hash + lockfile current.
 
 ## What the template gives you
 
 | Piece | What it does |
 |---|---|
-| `scripts/check-update.sh` | **The only project-specific file.** Answers "what's the latest version?" (contract below). |
+| `scripts/check-update.sh` | Project-specific release check. Answers "what's the latest version?" (contract below). |
 | `scripts/lib/network.sh` | Shared hardened fetch helpers: fail-fast connect, 3× retry with backoff, `max-time` cap, real error capture. |
-| `update-version.sh` | Downloads the archive for a version, computes the SRI hash, updates `package.nix` + `version.json`. |
+| `update-version.sh` | Downloads the release asset for a version, computes the SRI hash, updates `package.nix` + `version.json`. |
 | `.github/workflows/ci.yml` | Runs on every push, PR, and manual dispatch: `nix flake check` + build the default package. |
-| `.github/workflows/update.yml` | Daily auto-update: check → update → **verify the flake builds** → commit → push. Auto-opens a deduped issue on failure, auto-closes it on recovery. |
-| `flake.nix` / `package.nix` / `version.json` | Minimal package flake skeleton. |
+| `.github/workflows/update.yml` | Daily auto-update: check → update → **verify the flake builds** → commit → push → dispatch Build Check. Auto-opens a deduped issue on failure, auto-closes it on recovery. |
+| `flake.nix` / `package.nix` / `version.json` | Working jq package example. |
 
 ## How the update pipeline works
 
@@ -42,6 +44,8 @@ nix flake update
 nix flake check --no-build && nix build .#default --no-link   ← gate
    ▼
 commit as github-actions[bot] + push
+   ▼
+explicitly dispatch Build Check on the updated branch
 ```
 
 **Failure handling (the fleet's hardest-won lesson):** every network fetch fails fast (`--connect-timeout 10` instead of hanging 135s+), retries transient errors 3×, and the *real* error is captured into `fail_reason`. If the run still fails, a `report-failure` job opens an issue tagged `auto-failure` — while that issue is open, later failures **comment on it** instead of spamming (the cron runs daily; without dedupe you'd drown). When the workflow succeeds again, the issue is **closed automatically**. The run still goes red — the issue is extra visibility, not a replacement.
@@ -102,6 +106,8 @@ Keep one fetch per channel/component, `die()` per failure, `update_needed=true` 
 
 ## Notes
 
-- `flake.lock` is intentionally **not** committed in the template — run `nix flake update` once (or let the update workflow do it).
+- `flake.lock` is committed. Run `nix flake update` to refresh it; the update workflow also refreshes it for new releases.
+- The example supports only `x86_64-linux`, matching its prebuilt asset. Add other systems only when matching assets are configured.
+- Build Check is explicitly dispatched after bot pushes because pushes made with `GITHUB_TOKEN` do not trigger push workflows.
 - The verify step requires the package attribute `.#default`; `flake.nix` provides it.
 - Local testing: `GITHUB_OUTPUT=/tmp/out ./scripts/check-update.sh` works fine — the helpers default to stdout when `GITHUB_OUTPUT` isn't set.

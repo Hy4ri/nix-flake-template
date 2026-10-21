@@ -26,8 +26,8 @@ if [ -z "$version" ]; then
   exit 1
 fi
 
-# ← CHANGE THIS: archive URL for $version
-DOWNLOAD_URL_TEMPLATE="https://github.com/OWNER/REPO/releases/download/v${version}/myapp-${version}.tar.gz"
+# ← CHANGE THIS: download URL for $version (working example: jq for x86_64-linux)
+DOWNLOAD_URL_TEMPLATE="https://github.com/jqlang/jq/releases/download/jq-${version}/jq-linux-amd64"
 
 get_sri_hash() {
   local url="$1" temp_file raw_hash
