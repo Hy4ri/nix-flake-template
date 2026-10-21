@@ -25,8 +25,8 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib/network.sh"
 
-# ← CHANGE THIS: owner/name of the project this flake packages
-REPO="OWNER/REPO"
+# ← CHANGE THIS: owner/name of the project this flake packages (working example: jq)
+REPO="jqlang/jq"
 
 # ── Alternative sources (swap the block below) ─────────────────────
 # HTTP version endpoint (kimicode pattern):
@@ -43,7 +43,7 @@ REPO="OWNER/REPO"
 
 echo "Fetching latest version..."
 LATEST_VERSION=""
-if ! LATEST_VERSION=$(fetch_gh_api "repos/$REPO/releases/latest" --jq '.tag_name | ltrimstr("v")'); then
+if ! LATEST_VERSION=$(fetch_gh_api "repos/$REPO/releases/latest" --jq '.tag_name | ltrimstr("jq-")'); then
   die "Could not fetch latest version from GitHub API after 3 attempts. Last error: $(tail -n 1 "$ERR_LOG" 2>/dev/null || echo 'unknown')"
 fi
 [ -n "$LATEST_VERSION" ] || die "GitHub API returned an empty version."
