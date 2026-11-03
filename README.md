@@ -12,6 +12,7 @@ The included example packages **jq for x86_64-linux**. It builds without customi
    - `update-version.sh` — set `DOWNLOAD_URL_TEMPLATE`
    - `package.nix` — `pname`, `src` URL, `installPhase`, `installCheckPhase`, `meta`; update `flake.nix` systems to match your assets
    - `.github/workflows/update.yml` — the `schedule` cron if you want a different cadence
+   - `.github/FUNDING.yml` — change it to your own sponsor links, or delete it
 3. Set the starting version and hash: `./update-version.sh <version>`. Then refresh the included lockfile: `nix flake update` (the update workflow refreshes it automatically on each new upstream version).
 4. Push. That's it — the daily workflow keeps version + hash + lockfile current.
 
@@ -111,3 +112,7 @@ Keep one fetch per channel/component, `die()` per failure, `update_needed=true` 
 - Build Check is explicitly dispatched after bot pushes because pushes made with `GITHUB_TOKEN` do not trigger push workflows.
 - The verify step requires the package attribute `.#default`; `flake.nix` provides it.
 - Local testing: `GITHUB_OUTPUT=/tmp/out ./scripts/check-update.sh` works fine — the helpers default to stdout when `GITHUB_OUTPUT` isn't set.
+
+## Support
+
+If this template helps you, you can support my work on [GitHub Sponsors](https://github.com/sponsors/hy4ri) or [Ko-fi](https://ko-fi.com/m_5_7).
